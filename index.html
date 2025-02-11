@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+    <title>Scientific Calculator In TS</title>
+
+    <script src="index.js"></script>
+
+    <style>
+        .no-cursor {
+            caret-color: transparent;
+            /* Hides the blinking text cursor */
+        }
+    </style>
+</head>
+
+<body id="main">
+
+
+
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-end ">
+            <div class="col-12 col-lg-9  first_part "> 
+                <div class="d-flex flex-column justify-content-between "> 
+                    <!-- nav bar -->
+
+                    <nav class="navbar d-flex">
+                        <div>
+                            <a class="navbar-brand" href="#">Calculator</a>
+                        </div>
+                        <div>
+                            <button class="btn"><i class="fa fa-circle-half-stroke fa-lg" aria-hidden="true"
+                                    onclick="changeTheme()"></i></button>
+                            <button class="btn d-block d-lg-none"  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasHistory" aria-controls="offcanvasHistory"><i class="fa fa-clock fa-lg " aria-hidden="true"
+                                    ></i></button>
+                            
+                        </div>
+                        
+                    </nav>
+
+                    <div class="d-flex flex-column ">
+                        <!-- input text  -->
+
+                        <div id="spanDiv">
+                            <input id="spanOutput" type="text" placeholder="0"  class="form-control no-cursor text-end"
+                                style="font-size: 40px; font-weight: bold" />
+                        </div>
+
+                        <div class="d-flex justify-content-start">
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4" id="redian">Red</button>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">F-E</button>
+                        </div>
+                        <div>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">MC</button>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">MR</button>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">M+</button>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">M-</button>
+                            <button class="btn btn shadow-sm rounded me-4 ps-4 pe-4">MS</button>
+
+                        </div>
+
+                        <hr>
+
+                        <!-- Dropdown for Trigo -->
+
+                        <div class="d-flex">
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle me-4 " type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">Trigonometry</button>
+                                <div class="dropdown-menu bg-secondary" style="width: 300px;">
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">sin</button>
+                                            
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">cos</button>
+                                           
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">tan</button>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">sec</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">csc</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">cot</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle me-4 " type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">Trigonometry(Inverse)</button>
+                                <div class="dropdown-menu bg-secondary" style="width: 300px;">
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">asin</button>
+                                            
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">acos</button>
+                                           
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">atan</button>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">asec</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">acsc</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">acot</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle me-4 " type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">Hyp</button>
+                                <div class="dropdown-menu bg-secondary" style="width: 300px;">
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">sinh</button>
+                                            
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">cosh</button>
+                                           
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">tanh</button>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">sech</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">csch</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">coth</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                           <div class="dropdown">
+                                <button class="btn dropdown-toggle me-4 " type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">Hyp(Inverse)</button>
+                                <div class="dropdown-menu bg-secondary" style="width: 300px;">
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">arsinh</button>
+                                            
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">arcosh</button>
+                                           
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100 drop_2nd">artanh</button>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 pb-2">
+                                        
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">arsech</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">arcsch</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">arcoth</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- dropdown for function -->
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Function
+                                </button>
+                                <div class="dropdown-menu bg-secondary" style="width: 300px;">
+                                    <div class="row row-cols-3 pb-2">
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">| x |</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">⌈x⌉</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">⌊x⌋</button>
+                                        </div>
+
+                                    </div>
+                                    <div class="row row-cols-3 pb-2">
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">rand</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">→dms</button>
+                                        </div>
+                                        <div class="col col-4">
+                                            <button class="btn btn-light px-0 w-100">→deg</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- main button section -->
+
+                        <div class="">
+                            <div class="row row-cols-5 g-1 text-center">
+                                <div>
+                                    <button class="btn shadow-sm w-100 rounded nd_main">
+                                        2nd</p>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="btn shadow-sm w-100 rounded">
+                                        <p class=" m-0 p-0">𝜫</p>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="btn shadow-sm w-100 rounded">e</button>
+                                </div>
+                                <div>
+                                    <button class="btn shadow-sm w-100 rounded">CE</button>
+                                </div>
+                                <div>
+                                    <button class="btn shadow-sm w-100 rounded" value="backspace">
+                                        BackSpace
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5  g-1 text-center">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd">
+                                        x²
+                                    </button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change" value="x^3">x^3</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">1/x</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">| x |</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">exp</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">mod</button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5 g-1 text-center">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd">2√x</button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change">3√x</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">(</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">)</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">n!</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">
+                                        <p class="m-0 p-0">/</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5 g-1 text-center">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd">
+                                        xʸ
+                                    </button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change">y√x</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">7</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">8</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">9</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">
+                                        <p class="m-0 p-0">*</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5 g-1 text-center">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd" >
+                                        10^x 
+                                    </button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change">2^x</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">4</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">5</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">6</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">-</button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5  g-1 text-center">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd">
+                                        log
+                                    </button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change">logᵧ(x)</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded ">1</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">2</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">3</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">+</button>
+                                </div>
+                            </div>
+                            <div class="row row-cols-5 g-1 text-center ">
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded nd">ln</button>
+                                    <button class="btn shadow-sm w-100 rounded nd_change">e^x</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">+/-</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">0</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">.</button>
+                                </div>
+                                <div class="">
+                                    <button class="btn shadow-sm w-100 rounded">=</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 d-none d-lg-block second_part h-100">
+                <ul class="nav nav-underline">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Histroy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Memory</a>
+                    </li>
+                    
+                </ul>
+                <div>
+                    <p class="history-div"></p>
+                </div>
+            </div>
+
+
+            <!-- add offcanvas here -->
+
+            <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasHistory" aria-labelledby="offcanvasBottomLabel">
+                <div class="offcanvas-header">
+                  <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body small">
+                  ...
+                </div>
+              </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
