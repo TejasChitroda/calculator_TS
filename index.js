@@ -1,447 +1,415 @@
+var Operation;
+(function (Operation) {
+    Operation["ADD"] = "+";
+    Operation["SUBTRACT"] = "-";
+    Operation["MULTIPLY"] = "*";
+    Operation["DIVIDE"] = "/";
+    Operation["POWER"] = "^";
+    Operation["SQUARE_ROOT"] = "2\u221Ax";
+    Operation["FACTORIAL"] = "n!";
+    Operation["ABSOLUTE"] = "| x |";
+    Operation["LOG"] = "log";
+    Operation["LN"] = "ln";
+    Operation["PI"] = "\u03C0";
+    Operation["E"] = "e";
+    Operation["DEGREE"] = "Deg";
+    Operation["RADIAN"] = "Red";
+    Operation["SIN"] = "sin";
+    Operation["COS"] = "cos";
+    Operation["TAN"] = "tan";
+    Operation["SEC"] = "sec";
+    Operation["CSC"] = "csc";
+    Operation["COT"] = "cot";
+    Operation["ASIN"] = "asin";
+    Operation["ACOS"] = "acos";
+    Operation["ATAN"] = "atan";
+    Operation["EQUALS"] = "=";
+    Operation["DOT"] = ".";
+    Operation["BACKSPACE"] = "BackSpace";
+    Operation["CLEAR"] = "CE";
+    Operation["MOD"] = "%";
+    Operation["RANDOM"] = "rand";
+    Operation["INV"] = "1/x";
+    Operation["PLUSMINUS"] = "+/-";
+    Operation["SQuer"] = "x\u00B2";
+    Operation["TENPOW"] = "10^x";
+    Operation["FLOOR"] = "\u230Ax\u230B";
+    Operation["CEIL"] = "\u2308x\u2309";
+    Operation["RAND"] = "rand";
+    Operation["XPOWY"] = "x^3";
+    Operation["EXP"] = "exp";
+})(Operation || (Operation = {}));
+var main = document.getElementById('main');
 document.addEventListener("DOMContentLoaded", function () {
-    var main = document.getElementById("main");
-    var theme = localStorage.getItem("theme");
-    console.log("theme class is : ".concat(theme));
-    main.className = theme ? theme : "theme_light";
-    var Calculate = /** @class */ (function () {
-        function Calculate() {
-            this.currentValue = '';
-            this.display = document.getElementById("spanOutput");
+    var theme = localStorage.getItem("theme") || "theme_light";
+    main === null || main === void 0 ? void 0 : main.classList.add(theme);
+});
+function changeTheme() {
+    var themeClass;
+    if (main === null || main === void 0 ? void 0 : main.classList.contains("theme_light")) {
+        main.classList.replace("theme_light", "theme_dark"); // dark mode
+        themeClass = "theme_dark";
+    }
+    else {
+        main === null || main === void 0 ? void 0 : main.classList.replace("theme_dark", "theme_light"); // light mode
+        themeClass = "theme_light";
+    }
+    try {
+        localStorage.setItem('theme', themeClass);
+    }
+    catch (err) {
+        console.error("error in storing theme: ".concat(err));
+    }
+}
+var excludeOperator = ['1/x', 'x^3', 'exp', 'rand', '⌊x⌋', '⌈x⌉', '+/-', 'ln', '2√x', 'log', 'Red', 'Deg', '10^x', '2nd', 'x²', 'Trigonometry', 'Trigonometry(Inverse)', 'Hyp', 'Hyp(Inverse)', 'Function'];
+var Calculator = /** @class */ (function () {
+    function Calculator(display) {
+        this.currentValue = '';
+        this.display = display;
+    }
+    Calculator.prototype.updateScreen = function () {
+        this.display.value = this.currentValue;
+    };
+    Calculator.prototype.append = function (value) {
+        if (value === Operation.PI) {
+            this.currentValue += Math.PI.toString();
         }
-        Calculate.prototype.evaluate = function (currentValue) {
-            try {
-                // Replace the shorthand scientific notation 'e' to 'Math.pow(10, exponent)' form
-                currentValue = currentValue.replace(/(\d)e([+-]?\d+)/g, function (_, base, exponent) {
-                    return "".concat(base, " * Math.pow(10, ").concat(exponent, ")");
-                });
-                // Replace other function names and constants for evaluation
-                currentValue = currentValue.replace("log", "Math.log");
-                currentValue = currentValue.replace("π", Math.PI.toString());
-                currentValue = currentValue.replace("e", Math.E.toString());
-                var result = eval(currentValue);
-                if (isNaN(result) || result === undefined) {
-                    return "Error";
-                }
-                return result.toString();
-            }
-            catch (err) {
-                console.error("Evaluation error: ", err);
-                return "Error";
-            }
-        };
-        Calculate.prototype.canNotDivide = function (currentValue) {
-            var i = currentValue.includes('/0');
-            if (i) {
-                return 'Infinity';
-            }
-            else {
-                return '';
-            }
-        };
-        Calculate.prototype.factorial = function (n) {
-            if (n < 0)
-                return "Error";
-            var result = 1;
-            for (var i = 1; i <= n; i++) {
-                result *= i;
-            }
-            return result.toString();
-        };
-        Calculate.prototype.sqrt = function (currentValue) {
-            var num = parseFloat(currentValue);
-            return num >= 0 ? Math.sqrt(num).toString() : "Invalid Input";
-        };
-        Calculate.prototype.power = function (currentValue) {
-            var values = currentValue.split("^");
-            if (values.length === 2) {
-                var base = parseFloat(values[0]);
-                var exponent = parseFloat(values[1]);
-                if (!isNaN(base) && !isNaN(exponent)) {
-                    return Math.pow(base, exponent).toString();
-                }
-            }
-            return "Invalid Format";
-        };
-        Calculate.prototype.append = function (value) {
-            if (value === "π") {
-                this.currentValue += Math.PI.toString();
-            }
-            else if (this.display.value === "0" && value !== ".") {
-                this.currentValue = value;
-            }
-            else {
-                this.currentValue += value;
-            }
-            this.updateScreen();
-        };
-        Calculate.prototype.updateScreen = function () {
-            this.display.value = this.currentValue;
-        };
-        Calculate.prototype.delete = function () {
-            this.currentValue = this.currentValue.slice(0, -1);
-            this.updateScreen();
-        };
-        Calculate.prototype.clear = function () {
-            this.currentValue = "";
-            this.updateScreen();
-        };
-        return Calculate;
-    }());
-    var evaluate = new Calculate();
-    var display = document.getElementById("spanOutput");
-    var currentValue = "";
-    document.addEventListener("keydown", function (event) {
-        var key = event.key;
-        if (!isNaN(Number(key)) || "+-*/().".includes(key)) {
-            evaluate.append(key);
+        else if (value === Operation.E) {
+            this.currentValue += Math.E.toString();
         }
-        else if (key.toLowerCase() === "p") {
-            evaluate.append("π");
+        else if (excludeOperator.includes(value)) {
         }
-        else if (key === "Enter") {
-            currentValue = evaluate.evaluate(currentValue);
-            display.value = currentValue;
+        else {
+            this.currentValue += value;
         }
-        else if (key === "Backspace") {
-            evaluate.delete();
+        this.updateScreen();
+    };
+    Calculator.prototype.evaluate = function (currentValue) {
+        try {
+            currentValue = this.safeParser(currentValue);
+            var result = new Function('return ' + currentValue)();
+            return isNaN(result) ? 'Error' : result.toString();
         }
-        else if (key === "Escape") {
-            evaluate.clear();
+        catch (err) {
+            console.error('Evaluation error:', err);
+            return 'Error';
         }
-    });
-    var toggleButtons = document.querySelector(".nd_main");
-    toggleButtons.addEventListener('click', function () {
-        var toggle = document.querySelectorAll(".nd_change");
-        toggle.forEach(function (e) {
-            if (e.style.display === "none") {
-                e.style.display = "block";
+    };
+    Calculator.prototype.safeParser = function (input) {
+        return input
+            .replace('log', 'Math.log10')
+            .replace('π', Math.PI.toString())
+            .replace('e', Math.E.toString())
+            .replace('√', 'Math.sqrt');
+    };
+    Calculator.prototype.delete = function () {
+        this.currentValue = this.currentValue.slice(0, -1);
+        this.updateScreen();
+    };
+    Calculator.prototype.clear = function () {
+        this.currentValue = '';
+        this.updateScreen();
+    };
+    Calculator.prototype.factorial = function (n) {
+        if (n < 0)
+            return 'Error';
+        var result = 1;
+        for (var i = 1; i <= n; i++) {
+            result *= i;
+        }
+        return result.toString();
+    };
+    Calculator.prototype.sqrt = function (currentValue) {
+        var num = parseFloat(currentValue);
+        return num >= 0 ? Math.sqrt(num).toString() : 'Invalid Input';
+    };
+    Calculator.prototype.power = function (currentValue) {
+        var values = currentValue.split(Operation.POWER);
+        if (values.length === 2) {
+            var base = parseFloat(values[0]);
+            var exponent = parseFloat(values[1]);
+            if (!isNaN(base) && !isNaN(exponent)) {
+                return Math.pow(base, exponent).toString();
             }
-            else {
-                e.style.display = 'none';
+        }
+        return 'Invalid Format';
+    };
+    return Calculator;
+}());
+document.addEventListener('DOMContentLoaded', function () {
+    var display = document.getElementById('spanOutput');
+    var calculator = new Calculator(display);
+    var buttons = document.querySelectorAll('.btn');
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            var value = button.innerText.trim();
+            switch (value) {
+                case Operation.CLEAR:
+                    calculator.clear();
+                    break;
+                case Operation.EQUALS:
+                    display.value = calculator.evaluate(calculator.currentValue);
+                    break;
+                case Operation.BACKSPACE:
+                    calculator.delete();
+                    break;
+                case Operation.FACTORIAL:
+                    display.value = calculator.factorial(parseInt(calculator.currentValue));
+                    break;
+                case Operation.SQUARE_ROOT:
+                    display.value = calculator.sqrt(calculator.currentValue);
+                    break;
+                case Operation.POWER:
+                    calculator.append(Operation.POWER);
+                    break;
+                case Operation.ABSOLUTE:
+                    display.value = (Math.abs(Number(calculator.currentValue)).toString());
+                    break;
+                case Operation.INV:
+                    display.value = (Math.pow(Number(calculator.currentValue), -1).toString());
+                    break;
+                case Operation.FLOOR:
+                    display.value = (Math.floor(Number(calculator.currentValue))).toString();
+                    break;
+                case Operation.CEIL:
+                    display.value = (Math.ceil(Number(calculator.currentValue))).toString();
+                    break;
+                case Operation.RAND:
+                    display.value = (Math.random()).toString();
+                    break;
+                case Operation.SQuer:
+                    display.value = (Math.pow(Number(calculator.currentValue), 2)).toString();
+                    break;
+                case Operation.XPOWY:
+                    display.value = (Math.pow(Number(calculator.currentValue), 3)).toString();
+                    break;
+                case Operation.PLUSMINUS:
+                    display.value = "-" + calculator.currentValue;
+                    break;
+                case Operation.EXP:
+                    display.value = (Math.exp(Number(calculator.currentValue))).toString();
+                case Operation.TENPOW:
+                    display.value = (Math.pow(10, Number(calculator.currentValue))).toString();
+                    break;
+                case Operation.LN:
+                    display.value = (Math.log(Number(calculator.currentValue))).toString();
+                    break;
+                case Operation.LOG:
+                    display.value = (Math.log10(Number(calculator.currentValue))).toString();
+                    break;
+                default:
+                    calculator.append(value);
+                    break;
             }
         });
-        var target = document.querySelectorAll(".nd");
-        target.forEach(function (e) {
-            if (e.style.display === "block") {
-                e.style.display = "none";
-            }
-            else {
-                e.style.display = 'block';
-            }
-        });
     });
-    var buttons = document.getElementsByClassName("btn");
+    // Additional code for handling trigonometric operations
     var redian = document.getElementById('redian');
-    var redFlage = 0;
+    var redFlag = 0;
     redian.addEventListener('click', function () {
-        if (redFlage == 0) {
-            redFlage = 1;
+        if (redFlag === 0) {
+            redFlag = 1;
             redian.innerHTML = "Deg"; // Display "Deg" when flag is 1
         }
         else {
-            redFlage = 0;
+            redFlag = 0;
             redian.innerHTML = "Red"; // Display "Red" when flag is 0
         }
     });
-    var _loop_1 = function (i) {
-        var button = buttons[i];
-        button.addEventListener("click", function () {
-            var value = button.innerText.trim();
-            // Handle special cases like CE, . (decimal point), etc.
-            if (value == "CE") {
-                currentValue = "";
-                display.value = currentValue;
+    var trigButtons = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan'];
+    var inverseTrigButtons = ['asec', 'acsc', 'acot'];
+    var hyperbolicTrigButtons = ['sinh', 'cosh', 'tanh', 'sech', 'csch', 'coth'];
+    var inverseHyperbolicTrigButtons = ['arsinh', 'arcosh', 'artanh', 'arsech', 'arcsch', 'arcoth'];
+    trigButtons.forEach(function (trig) {
+        var trigButton = document.getElementById(trig);
+        trigButton.addEventListener('click', function () {
+            // If redFlag is 1, convert input to radians before calculation
+            if (redFlag === 1) {
+                calculator.currentValue = (parseFloat(calculator.currentValue) * (Math.PI / 180)).toString();
             }
-            else if (value == ".") {
-                if (!currentValue.includes('.')) {
-                    currentValue += value;
-                    display.value = currentValue;
-                }
+            // Perform the trigonometric operation
+            switch (trig) {
+                case 'sin':
+                    calculator.currentValue = Math.sin(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'cos':
+                    calculator.currentValue = Math.cos(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'tan':
+                    calculator.currentValue = Math.tan(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'sec':
+                    calculator.currentValue = (1 / Math.cos(parseFloat(calculator.currentValue))).toString();
+                    break;
+                case 'csc':
+                    calculator.currentValue = (1 / Math.sin(parseFloat(calculator.currentValue))).toString();
+                    break;
+                case 'cot':
+                    calculator.currentValue = (1 / Math.tan(parseFloat(calculator.currentValue))).toString();
+                    break;
+                case 'asin':
+                    var asinResult = Math.asin(parseFloat(calculator.currentValue)); // in radians
+                    if (redFlag === 1) {
+                        // If redFlag is 1, convert result to degrees
+                        calculator.currentValue = (asinResult * 180 / Math.PI).toString(); // radians to degrees
+                    }
+                    else {
+                        calculator.currentValue = asinResult.toString(); // radians (default)
+                    }
+                    break;
+                case 'acos':
+                    var acosResult = Math.acos(parseFloat(calculator.currentValue)); // in radians
+                    if (redFlag === 1) {
+                        // If redFlag is 1, convert result to degrees
+                        calculator.currentValue = (acosResult * 180 / Math.PI).toString(); // radians to degrees
+                    }
+                    else {
+                        calculator.currentValue = acosResult.toString(); // radians (default)
+                    }
+                    break;
+                case 'atan':
+                    var atanResult = Math.atan(parseFloat(calculator.currentValue)); // in radians
+                    if (redFlag === 1) {
+                        // If redFlag is 1, convert result to degrees
+                        calculator.currentValue = (atanResult * (180 / Math.PI)).toString(); // radians to degrees
+                    }
+                    else {
+                        calculator.currentValue = atanResult.toString(); // radians (default)
+                    }
+                    break;
             }
-            else if (value == "=") {
-                if (currentValue.includes("^")) {
-                    currentValue = evaluate.power(currentValue);
-                }
-                else {
-                    currentValue = evaluate.evaluate(currentValue);
-                }
-                display.value = currentValue;
-            }
-            else if (value == "BackSpace") {
-                currentValue = currentValue.slice(0, -1);
-                display.value = currentValue;
-            }
-            else if (value == "n!") {
-                currentValue = evaluate.factorial(parseInt(currentValue));
-                display.value = currentValue;
-            }
-            else if (value == "𝜫") {
-                currentValue += Math.PI;
-                display.value = currentValue;
-            }
-            else if (value == "exp") {
-                currentValue += "e+";
-                display.value = currentValue;
-            }
-            else if (value == "e") {
-                currentValue += Math.E;
-                display.value = currentValue;
-            }
-            else if (value == "+/-") {
-                currentValue = (-parseFloat(currentValue)).toString();
-                display.value = currentValue;
-            }
-            else if (value == "x²") {
-                currentValue = Math.pow(parseFloat(currentValue), 2).toString();
-                display.value = currentValue;
-            }
-            else if (value == "2√x") {
-                currentValue = evaluate.sqrt(currentValue);
-                display.value = currentValue;
-            }
-            else if (value == "xʸ") {
-                currentValue += "^"; // Append "^" for exponentiation
-                display.value = currentValue;
-            }
-            else if (value == "mod") {
-                currentValue += "%";
-                display.value = currentValue;
-            }
-            else if (value == "| x |") {
-                currentValue = Math.abs(parseFloat(currentValue)).toString();
-                display.value = currentValue;
-            }
-            else if (value == "1/x") {
-                currentValue = (Math.pow(parseFloat(currentValue), -1)).toString();
-                display.value = currentValue;
-            }
-            else if (value == "10^x") {
-                currentValue += "10^";
-                display.value = currentValue;
-            }
-            else if (value == "log") {
-                currentValue = Math.log10(parseFloat(currentValue)).toString();
-                display.value = currentValue;
-            }
-            else if (value == "ln") {
-                currentValue = Math.log(parseFloat(currentValue)).toString();
-                display.value = currentValue;
-            }
-            else if (value == "2nd") {
-                currentValue = currentValue;
-            }
-            else if (value == "Trigonometry") {
-                display.value = currentValue;
-            }
-            else if (value == "Trigonometry(Inverse)") {
-                display.value = currentValue;
-            }
-            else if (value == 'Hyp') {
-                display.value = currentValue;
-            }
-            else if (value == "Hyp(Inverse)") {
-                display.value = currentValue;
-            }
-            else if (value == "Function") {
-                currentValue = currentValue;
-            }
-            else if (value == "| x |" || value == "⌈x⌉" || value == "⌊x⌋" || value == "rand") {
-                if (value == "| x |") {
-                    currentValue = Math.abs(parseFloat(currentValue)).toString();
-                    display.value = currentValue;
-                }
-                else if (value == "⌈x⌉") {
-                    currentValue = Math.ceil(parseFloat(currentValue)).toString();
-                    display.value = currentValue;
-                }
-                else if (value == "⌊x⌋") {
-                    currentValue = Math.floor(parseFloat(currentValue)).toString();
-                    display.value = currentValue;
-                }
-                else if (value == "rand") {
-                    currentValue = Math.random().toString();
-                    display.value = currentValue;
-                }
-            }
-            else if (value == "Red" || value == "Deg") {
-            }
-            else if (value == 'sin' || value == 'cos' || value == 'tan' || value == 'sec' || value == 'csc' || value == 'cot') {
-                if (redFlage) {
-                    currentValue = (parseFloat(currentValue) * (Math.PI / 180)).toString();
-                }
-                switch (value) {
-                    case 'sin':
-                        currentValue = Math.sin(parseFloat(currentValue)).toString();
-                        break;
-                    case 'cos':
-                        currentValue = Math.cos(parseFloat(currentValue)).toString();
-                        break;
-                    case 'tan':
-                        currentValue = Math.tan(parseFloat(currentValue)).toString();
-                        break;
-                    case 'sec':
-                        if (Math.cos(parseFloat(currentValue)) !== 0) {
-                            currentValue = (1 / Math.cos(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // sec(x) is undefined where cos(x) = 0
-                        }
-                        break;
-                    case 'csc':
-                        if (Math.sin(parseFloat(currentValue)) !== 0) {
-                            currentValue = (1 / Math.sin(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // csc(x) is undefined where sin(x) = 0
-                        }
-                        break;
-                    case 'cot':
-                        if (Math.tan(parseFloat(currentValue)) !== 0) {
-                            currentValue = (1 / Math.tan(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // cot(x) is undefined where tan(x) = 0
-                        }
-                        break;
-                }
-                display.value = currentValue;
-            }
-            else if (value == 'asin' || value == 'acos' || value == 'atan' || value == 'asec' || value == 'acsc' || value == 'acot') {
-                if (redFlage) {
-                    currentValue = (parseFloat(currentValue) * (Math.PI / 180)).toString();
-                }
-                switch (value) {
-                    case 'asin':
-                        currentValue = Math.asin(parseFloat(currentValue)).toString();
-                        break;
-                    case 'acos':
-                        currentValue = Math.acos(parseFloat(currentValue)).toString();
-                        break;
-                    case 'atan':
-                        currentValue = Math.atan(parseFloat(currentValue)).toString();
-                        break;
-                    case 'asec':
-                        if (Math.abs(parseFloat(currentValue)) >= 1) { // secant must be >= 1 or <= -1
-                            currentValue = Math.acos(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // asech(x) is undefined for |x| < 1
-                        }
-                        break;
-                    case 'acsc':
-                        if (Math.abs(parseFloat(currentValue)) >= 1) { // cosecant must be >= 1 or <= -1
-                            currentValue = Math.asin(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // acsc(x) is undefined for |x| < 1
-                        }
-                        break;
-                    case 'acot':
-                        if (Math.abs(parseFloat(currentValue)) >= 1) { // cotangent must be > 1 or < -1
-                            currentValue = Math.atan(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // acot(x) is undefined for |x| < 1
-                        }
-                        break;
-                }
-                display.value = currentValue;
-            }
-            else if (value == 'arsinh' || value == 'arcosh' || value == 'artanh' || value == 'arsech' || value == 'arcsch' || value == 'arcoth') {
-                // Inverse Hyperbolic Trigonometric Functions
-                switch (value) {
-                    case 'arsinh':
-                        currentValue = Math.asinh(parseFloat(currentValue)).toString();
-                        break;
-                    case 'arcosh':
-                        if (parseFloat(currentValue) >= 1) {
-                            currentValue = Math.acosh(parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined";
-                        }
-                        break;
-                    case 'artanh':
-                        if (parseFloat(currentValue) > -1 && parseFloat(currentValue) < 1) {
-                            currentValue = Math.atanh(parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined";
-                        }
-                        break;
-                    case 'arsech':
-                        if (parseFloat(currentValue) >= 0 && parseFloat(currentValue) <= 1) {
-                            currentValue = Math.acosh(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined";
-                        }
-                        break;
-                    case 'arcsch':
-                        if (parseFloat(currentValue) !== 0) {
-                            currentValue = Math.asinh(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined";
-                        }
-                        break;
-                    case 'arcoth':
-                        if (Math.abs(parseFloat(currentValue)) > 1) {
-                            currentValue = Math.atanh(1 / parseFloat(currentValue)).toString();
-                        }
-                        else {
-                            currentValue = "Undefined";
-                        }
-                        break;
-                }
-                display.value = currentValue;
-            }
-            else if (value == 'sinh' || value == 'cosh' || value == 'tanh' || value == 'sech' || value == 'csch' || value == 'coth') {
-                // Hyperbolic Trigonometric Functions
-                switch (value) {
-                    case 'sinh':
-                        currentValue = Math.sinh(parseFloat(currentValue)).toString();
-                        break;
-                    case 'cosh':
-                        currentValue = Math.cosh(parseFloat(currentValue)).toString();
-                        break;
-                    case 'tanh':
-                        currentValue = Math.tanh(parseFloat(currentValue)).toString();
-                        break;
-                    case 'sech':
-                        if (parseFloat(currentValue) !== 0) {
-                            currentValue = (1 / Math.cosh(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // sech(x) is undefined at x = 0
-                        }
-                        break;
-                    case 'csch':
-                        if (parseFloat(currentValue) !== 0) {
-                            currentValue = (1 / Math.sinh(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // csch(x) is undefined at x = 0
-                        }
-                        break;
-                    case 'coth':
-                        if (parseFloat(currentValue) !== 0) {
-                            currentValue = (1 / Math.tanh(parseFloat(currentValue))).toString();
-                        }
-                        else {
-                            currentValue = "Undefined"; // coth(x) is undefined at x = 0
-                        }
-                        break;
-                }
-                display.value = currentValue;
-            }
-            else {
-                currentValue += value; // Append the value of the clicked button
-                display.value = currentValue;
-            }
+            // Update the display
+            display.value = calculator.currentValue;
         });
-    };
-    for (var i = 0; i < buttons.length; i++) {
-        _loop_1(i);
-    }
+    });
+    // Inverse Trigonometric Functions
+    inverseTrigButtons.forEach(function (trig) {
+        var trigButton = document.getElementById(trig);
+        trigButton.addEventListener('click', function () {
+            if (redFlag === 1) {
+                calculator.currentValue = (parseFloat(calculator.currentValue) * (Math.PI / 180)).toString();
+            }
+            switch (trig) {
+                case 'asec':
+                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
+                        calculator.currentValue = Math.acos(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                    }
+                    break;
+                case 'acsc':
+                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
+                        calculator.currentValue = Math.asin(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                    }
+                    break;
+                case 'acot':
+                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
+                        calculator.currentValue = Math.atan(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                    }
+                    break;
+            }
+            display.value = calculator.currentValue;
+        });
+    });
+    // Hyperbolic Trigonometric Functions
+    hyperbolicTrigButtons.forEach(function (trig) {
+        var trigButton = document.getElementById(trig);
+        trigButton.addEventListener('click', function () {
+            switch (trig) {
+                case 'sinh':
+                    calculator.currentValue = Math.sinh(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'cosh':
+                    calculator.currentValue = Math.cosh(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'tanh':
+                    calculator.currentValue = Math.tanh(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'sech':
+                    if (Math.cosh(parseFloat(calculator.currentValue)) !== 0) {
+                        calculator.currentValue = (1 / Math.cosh(parseFloat(calculator.currentValue))).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // sech(x) is undefined at x = 0
+                    }
+                    break;
+                case 'csch':
+                    if (Math.sinh(parseFloat(calculator.currentValue)) !== 0) {
+                        calculator.currentValue = (1 / Math.sinh(parseFloat(calculator.currentValue))).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // csch(x) is undefined at x = 0
+                    }
+                    break;
+                case 'coth':
+                    if (Math.tanh(parseFloat(calculator.currentValue)) !== 0) {
+                        calculator.currentValue = (1 / Math.tanh(parseFloat(calculator.currentValue))).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined"; // coth(x) is undefined at x = 0
+                    }
+                    break;
+            }
+            display.value = calculator.currentValue;
+        });
+    });
+    // Inverse Hyperbolic Trigonometric Functions
+    inverseHyperbolicTrigButtons.forEach(function (trig) {
+        var trigButton = document.getElementById(trig);
+        trigButton.addEventListener('click', function () {
+            switch (trig) {
+                case 'arsinh':
+                    calculator.currentValue = Math.asinh(parseFloat(calculator.currentValue)).toString();
+                    break;
+                case 'arcosh':
+                    if (parseFloat(calculator.currentValue) >= 1) {
+                        calculator.currentValue = Math.acosh(parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined";
+                    }
+                    break;
+                case 'artanh':
+                    if (parseFloat(calculator.currentValue) > -1 && parseFloat(calculator.currentValue) < 1) {
+                        calculator.currentValue = Math.atanh(parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined";
+                    }
+                    break;
+                case 'arsech':
+                    if (parseFloat(calculator.currentValue) >= 0 && parseFloat(calculator.currentValue) <= 1) {
+                        calculator.currentValue = Math.acosh(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined";
+                    }
+                    break;
+                case 'arcsch':
+                    if (parseFloat(calculator.currentValue) !== 0) {
+                        calculator.currentValue = Math.asinh(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined";
+                    }
+                    break;
+                case 'arcoth':
+                    if (Math.abs(parseFloat(calculator.currentValue)) > 1) {
+                        calculator.currentValue = Math.atanh(1 / parseFloat(calculator.currentValue)).toString();
+                    }
+                    else {
+                        calculator.currentValue = "Undefined";
+                    }
+                    break;
+            }
+            display.value = calculator.currentValue;
+        });
+    });
 });
