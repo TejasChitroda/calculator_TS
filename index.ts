@@ -437,7 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
       switch (trig) {
         case "asin":
           const asinInput = parseFloat(calculator.currentValue);
-          // Validation: asin is undefined for inputs < -1 or > 1
           if (asinInput < -1 || asinInput > 1) {
             calculator.currentValue = "Invalid Input"; // Invalid for out-of-range values
           } else {
@@ -447,7 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         case "acos":
           const acosInput = parseFloat(calculator.currentValue);
-          // Validation: acos is undefined for inputs < -1 or > 1
           if (acosInput < -1 || acosInput > 1) {
             calculator.currentValue = "Invalid Input"; // Invalid for out-of-range values
           } else {
@@ -457,13 +455,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         case "atan":
           const atanInput = parseFloat(calculator.currentValue);
-          // Perform atan calculation (no validation needed)
           calculator.currentValue = Math.atan(atanInput).toString();
           break;
 
         case "asec":
           const asecInput = parseFloat(calculator.currentValue);
-          // Validation: asec is undefined for |x| < 1
           if (Math.abs(asecInput) < 1) {
             calculator.currentValue = "Undefined";
           } else {
@@ -473,7 +469,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         case "acsc":
           const acscInput = parseFloat(calculator.currentValue);
-          // Validation: acsc is undefined for |x| < 1
           if (Math.abs(acscInput) < 1) {
             calculator.currentValue = "Undefined";
           } else {
@@ -483,7 +478,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         case "acot":
           const acotInput = parseFloat(calculator.currentValue);
-          // Validation: acot is undefined for x == 0
           if (acotInput === 0) {
             calculator.currentValue = "Undefined";
           } else {
@@ -499,7 +493,6 @@ document.addEventListener("DOMContentLoaded", () => {
           (180 / Math.PI)
         ).toString();
       }
-
       // Update the display with the current value
       display.value = calculator.currentValue;
     });
@@ -509,6 +502,13 @@ document.addEventListener("DOMContentLoaded", () => {
   hyperbolicTrigButtons.forEach((trig) => {
     const trigButton = document.getElementById(trig) as HTMLElement;
     trigButton.addEventListener("click", () => {
+      if (redFlag === 1) {
+        calculator.currentValue = (
+          parseFloat(calculator.currentValue) *
+          (Math.PI / 180)
+        ).toString();
+      }
+
       switch (trig) {
         case "sinh":
           calculator.currentValue = Math.sinh(
@@ -557,68 +557,73 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Inverse Hyperbolic Trigonometric Functions
   inverseHyperbolicTrigButtons.forEach((trig) => {
     const trigButton = document.getElementById(trig) as HTMLElement;
+
     trigButton.addEventListener("click", () => {
+      let currentVal = parseFloat(calculator.currentValue);
+
+      if (redFlag === 1) {
+        currentVal = parseFloat(calculator.currentValue) * (Math.PI / 180);
+      }
+
+      // Function to handle Undefined values
+      const setUndefined = () => {
+        calculator.currentValue = "Undefined";
+        display.value = calculator.currentValue;
+      };
+
       switch (trig) {
         case "arsinh":
-          calculator.currentValue = Math.asinh(
-            parseFloat(calculator.currentValue)
-          ).toString();
+          calculator.currentValue = Math.asinh(currentVal).toString();
           break;
+
         case "arcosh":
-          if (parseFloat(calculator.currentValue) >= 1) {
-            calculator.currentValue = Math.acosh(
-              parseFloat(calculator.currentValue)
-            ).toString();
+          if (currentVal >= 1) {
+            calculator.currentValue = Math.acosh(currentVal).toString();
           } else {
-            calculator.currentValue = "Undefined";
+            setUndefined();
           }
           break;
+
         case "artanh":
-          if (
-            parseFloat(calculator.currentValue) > -1 &&
-            parseFloat(calculator.currentValue) < 1
-          ) {
-            calculator.currentValue = Math.atanh(
-              parseFloat(calculator.currentValue)
-            ).toString();
+          if (currentVal > -1 && currentVal < 1) {
+            calculator.currentValue = Math.atanh(currentVal).toString();
           } else {
-            calculator.currentValue = "Undefined";
+            setUndefined();
           }
           break;
+
         case "arsech":
-          if (
-            parseFloat(calculator.currentValue) >= 0 &&
-            parseFloat(calculator.currentValue) <= 1
-          ) {
-            calculator.currentValue = Math.acosh(
-              1 / parseFloat(calculator.currentValue)
-            ).toString();
+          if (currentVal >= 0 && currentVal <= 1) {
+            calculator.currentValue = Math.acosh(1 / currentVal).toString();
           } else {
-            calculator.currentValue = "Undefined";
+            setUndefined();
           }
           break;
+
         case "arcsch":
-          if (parseFloat(calculator.currentValue) !== 0) {
-            calculator.currentValue = Math.asinh(
-              1 / parseFloat(calculator.currentValue)
-            ).toString();
+          if (currentVal !== 0) {
+            calculator.currentValue = Math.asinh(1 / currentVal).toString();
           } else {
-            calculator.currentValue = "Undefined";
+            setUndefined();
           }
           break;
+
         case "arcoth":
-          if (Math.abs(parseFloat(calculator.currentValue)) > 1) {
-            calculator.currentValue = Math.atanh(
-              1 / parseFloat(calculator.currentValue)
-            ).toString();
+          if (Math.abs(currentVal) > 1) {
+            calculator.currentValue = Math.atanh(1 / currentVal).toString();
           } else {
-            calculator.currentValue = "Undefined";
+            setUndefined();
           }
+          break;
+
+        default:
+          setUndefined();
           break;
       }
+
+      // Update the display
       display.value = calculator.currentValue;
     });
   });
