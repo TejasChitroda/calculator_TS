@@ -36,7 +36,9 @@ var Operation;
     Operation["FLOOR"] = "\u230Ax\u230B";
     Operation["CEIL"] = "\u2308x\u2309";
     Operation["RAND"] = "rand";
-    Operation["XPOWY"] = "x^3";
+    Operation["XPOWY"] = "x^y";
+    Operation["XPOW3"] = "x^3";
+    Operation["FE"] = "F-E";
     Operation["EXP"] = "exp";
 })(Operation || (Operation = {}));
 var main = document.getElementById("main");
@@ -82,8 +84,7 @@ var excludeOperator = [
     "Hyp",
     "Hyp(Inverse)",
     "Function",
-    ".",
-    "F-E"
+    "F-E",
 ];
 var Calculator = /** @class */ (function () {
     function Calculator(display) {
@@ -100,18 +101,51 @@ var Calculator = /** @class */ (function () {
         else if (value === Operation.E) {
             this.currentValue += Math.E.toString();
         }
-        else if (excludeOperator.includes(value)) {
+        else if (value == "+/-") {
+            this.currentValue = (-1 * this.currentValue).toString();
         }
-        else {
+        else if (excludeOperator.includes(value)) {
+            // No action for excluded operators
+        }
+        else if (value === "0" && this.currentValue === "0") {
+            // preventing leading zero
+        }
+        else if (value === "0" && this.currentValue === "") {
             this.currentValue += value;
         }
+        else if (value === "." && this.currentValue.includes(".")) {
+            if (value === "." &&
+                (this.currentValue.includes("+") ||
+                    this.currentValue.includes("-") ||
+                    this.currentValue.includes("*") ||
+                    this.currentValue.includes("/"))) {
+                this.currentValue += ".";
+            }
+        }
+        else {
+            if (this.currentValue.startsWith("0")) {
+                this.currentValue = this.currentValue.replace(/^0+/, "");
+            }
+            this.currentValue += value;
+        }
+        // Update the screen
         this.updateScreen();
     };
     Calculator.prototype.evaluate = function (currentValue) {
         try {
             currentValue = this.safeParser(currentValue);
             var result = new Function("return " + currentValue)();
-            return isNaN(result) ? "Error" : result.toString();
+            if (isNaN(result)) {
+                return "Error"; // Return "Error" if the result is NaN
+            }
+            else if (currentValue.includes("^")) {
+                var powerValue = this.power(currentValue);
+                return powerValue;
+            }
+            else {
+                currentValue = result.toString(); // Update currentValue with the result
+                return currentValue;
+            }
         }
         catch (err) {
             console.error("Evaluation error:", err);
@@ -157,6 +191,19 @@ var Calculator = /** @class */ (function () {
         }
         return "Invalid Format";
     };
+    Calculator.prototype.exponential = function (currentValue) {
+        var values = currentValue.split(".000e+0");
+        console.log("values");
+        if (values.length === 2) {
+            var firstValue = parseFloat(values[0]);
+            var secondValue = parseFloat(values[1]);
+            if (!isNaN(firstValue) && !isNaN(secondValue)) {
+                console.log((firstValue * Math.pow(10, secondValue)).toString());
+                return (firstValue * Math.pow(10, secondValue)).toString();
+            }
+        }
+        return "Invalid Format";
+    };
     return Calculator;
 }());
 document.addEventListener("DOMContentLoaded", function () {
@@ -171,7 +218,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     calculator.clear();
                     break;
                 case Operation.EQUALS:
-                    display.value = calculator.evaluate(calculator.currentValue);
+                    if (calculator.currentValue.includes("000e+0")) {
+                        console.log("This is in exponential form");
+                        var exponentFE = calculator.exponential(calculator.currentValue);
+                        display.value = exponentFE;
+                    }
+                    else {
+                        display.value = calculator.evaluate(calculator.currentValue);
+                        calculator.currentValue = calculator.evaluate(calculator.currentValue);
+                    }
                     break;
                 case Operation.BACKSPACE:
                     calculator.delete();
@@ -203,8 +258,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 case Operation.SQuer:
                     display.value = Math.pow(Number(calculator.currentValue), 2).toString();
                     break;
-                case Operation.XPOWY:
+                case Operation.XPOW3:
                     display.value = Math.pow(Number(calculator.currentValue), 3).toString();
+                    break;
+                case Operation.XPOWY:
+                    calculator.append(Operation.POWER);
+                    break;
+                case Operation.FE:
+                    var num = parseFloat(calculator.currentValue);
+                    calculator.currentValue = num.toExponential(3);
+                    display.value = calculator.currentValue;
                     break;
                 case Operation.PLUSMINUS:
                     // Toggle the sign of the current value
@@ -247,18 +310,8 @@ document.addEventListener("DOMContentLoaded", function () {
             redian.innerHTML = "Red"; // Display "Red" when flag is 0
         }
     });
-    var trigButtons = [
-        "sin",
-        "cos",
-        "tan",
-        "sec",
-        "csc",
-        "cot",
-        "asin",
-        "acos",
-        "atan",
-    ];
-    var inverseTrigButtons = ["asec", "acsc", "acot"];
+    var trigButtons = ["sin", "cos", "tan", "sec", "csc", "cot"];
+    var inverseTrigButtons = ["asin", "acos", "atan", "asec", "acsc", "acot"];
     var hyperbolicTrigButtons = [
         "sinh",
         "cosh",
@@ -303,36 +356,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "cot":
                     calculator.currentValue = (1 / Math.tan(parseFloat(calculator.currentValue))).toString();
                     break;
-                case "asin":
-                    var asinResult = Math.asin(parseFloat(calculator.currentValue)); // in radians
-                    if (redFlag === 1) {
-                        // If redFlag is 1, convert result to degrees
-                        calculator.currentValue = ((asinResult * 180) / Math.PI).toString(); // radians to degrees
-                    }
-                    else {
-                        calculator.currentValue = asinResult.toString(); // radians (default)
-                    }
-                    break;
-                case "acos":
-                    var acosResult = Math.acos(parseFloat(calculator.currentValue)); // in radians
-                    if (redFlag === 1) {
-                        // If redFlag is 1, convert result to degrees
-                        calculator.currentValue = ((acosResult * 180) / Math.PI).toString(); // radians to degrees
-                    }
-                    else {
-                        calculator.currentValue = acosResult.toString(); // radians (default)
-                    }
-                    break;
-                case "atan":
-                    var atanResult = Math.atan(parseFloat(calculator.currentValue)); // in radians
-                    if (redFlag === 1) {
-                        // If redFlag is 1, convert result to degrees
-                        calculator.currentValue = (atanResult * (180 / Math.PI)).toString(); // radians to degrees
-                    }
-                    else {
-                        calculator.currentValue = atanResult.toString(); // radians (default)
-                    }
-                    break;
             }
             // Update the display
             display.value = calculator.currentValue;
@@ -342,36 +365,74 @@ document.addEventListener("DOMContentLoaded", function () {
     inverseTrigButtons.forEach(function (trig) {
         var trigButton = document.getElementById(trig);
         trigButton.addEventListener("click", function () {
+            // If redFlag is 1, convert current value from degrees to radians
             if (redFlag === 1) {
                 calculator.currentValue = (parseFloat(calculator.currentValue) *
                     (Math.PI / 180)).toString();
             }
             switch (trig) {
-                case "asec":
-                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
-                        calculator.currentValue = Math.acos(1 / parseFloat(calculator.currentValue)).toString();
+                case "asin":
+                    var asinInput = parseFloat(calculator.currentValue);
+                    // Validation: asin is undefined for inputs < -1 or > 1
+                    if (asinInput < -1 || asinInput > 1) {
+                        calculator.currentValue = "Invalid Input"; // Invalid for out-of-range values
                     }
                     else {
-                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                        calculator.currentValue = Math.asin(asinInput).toString();
+                    }
+                    break;
+                case "acos":
+                    var acosInput = parseFloat(calculator.currentValue);
+                    // Validation: acos is undefined for inputs < -1 or > 1
+                    if (acosInput < -1 || acosInput > 1) {
+                        calculator.currentValue = "Invalid Input"; // Invalid for out-of-range values
+                    }
+                    else {
+                        calculator.currentValue = Math.acos(acosInput).toString();
+                    }
+                    break;
+                case "atan":
+                    var atanInput = parseFloat(calculator.currentValue);
+                    // Perform atan calculation (no validation needed)
+                    calculator.currentValue = Math.atan(atanInput).toString();
+                    break;
+                case "asec":
+                    var asecInput = parseFloat(calculator.currentValue);
+                    // Validation: asec is undefined for |x| < 1
+                    if (Math.abs(asecInput) < 1) {
+                        calculator.currentValue = "Undefined";
+                    }
+                    else {
+                        calculator.currentValue = Math.acos(1 / asecInput).toString();
                     }
                     break;
                 case "acsc":
-                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
-                        calculator.currentValue = Math.asin(1 / parseFloat(calculator.currentValue)).toString();
+                    var acscInput = parseFloat(calculator.currentValue);
+                    // Validation: acsc is undefined for |x| < 1
+                    if (Math.abs(acscInput) < 1) {
+                        calculator.currentValue = "Undefined";
                     }
                     else {
-                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                        calculator.currentValue = Math.asin(1 / acscInput).toString();
                     }
                     break;
                 case "acot":
-                    if (Math.abs(parseFloat(calculator.currentValue)) >= 1) {
-                        calculator.currentValue = Math.atan(1 / parseFloat(calculator.currentValue)).toString();
+                    var acotInput = parseFloat(calculator.currentValue);
+                    // Validation: acot is undefined for x == 0
+                    if (acotInput === 0) {
+                        calculator.currentValue = "Undefined";
                     }
                     else {
-                        calculator.currentValue = "Undefined"; // undefined for |x| < 1
+                        calculator.currentValue = Math.atan(1 / acotInput).toString();
                     }
                     break;
             }
+            // If redFlag is 1, convert result from radians to degrees
+            if (redFlag === 1) {
+                calculator.currentValue = (parseFloat(calculator.currentValue) *
+                    (180 / Math.PI)).toString();
+            }
+            // Update the display with the current value
             display.value = calculator.currentValue;
         });
     });
